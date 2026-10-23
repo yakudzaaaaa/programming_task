@@ -1,6 +1,8 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
+#include <stdexcept>
+
 class DynamicArray {
 private:
     int* m_data;

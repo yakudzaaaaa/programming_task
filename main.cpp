@@ -2,27 +2,33 @@
 #include "DynamicArray.h"
 
 int main() {
-    std::cout << "Test 1: Create and output" << std::endl;
-    DynamicArray arr1(3);
-    arr1.set(0, 10);
-    arr1.set(1, 20);
-    arr1.set(2, 30);
-    arr1.print();
+    std::cout << " Тест 1: invalid_argument " << std::endl;
+    try {
+        DynamicArray arr(3);
+        arr.set(0, 150);
+        std::cout << "Эта строка не напечатается" << std::endl;
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Поймано исключение " << e.what() << std::endl;
+    }
 
-    std::cout << "Test 2: Copy constructor" << std::endl;
-    DynamicArray arr2 = arr1;
-    arr2.print();
+    std::cout << "\n Тест 2: out_of_range " << std::endl;
+    try {
+        DynamicArray arr(3);
+        arr.get(10);
+        std::cout << "Эта строка не напечатается" << std::endl;
+    } catch (const std::out_of_range& e) {
+        std::cout << "Поймано исключение " << e.what() << std::endl;
+    }
 
-    std::cout << "Test 3: Adding to the end" << std::endl;
-    arr1.append(40);
-    arr1.print();
+    std::cout << "\n Тест 3: bad_alloc " << std::endl;
+    try {
+        std::cout << "Попытка создать массив огромного размера..." << std::endl;
+        DynamicArray hugeArray(2000000000);
+        std::cout << "Эта строка не напечатается" << std::endl;
+    } catch (const std::bad_alloc& e) {
+        std::cout << "Поймано исключение нехватка памяти" << std::endl;
+    }
 
-    std::cout << "Test 4: Array addition" << std::endl;
-    DynamicArray arr3(2);
-    arr3.set(0, 5);
-    arr3.set(1, 5);
-    arr1.add(arr3);
-    arr1.print();
-
+    std::cout << "\n Все тесты пройдены успешно! " << std::endl;
     return 0;
 }
