@@ -2,8 +2,11 @@
 #include <iostream>
 
 DynamicArray::DynamicArray(int size) {
+    if (size < 0) {
+        throw std::invalid_argument("Размер массива не может быть отрицательным");
+    }
     m_size = size;
-    m_data = new int[size]();
+    m_data = new int[m_size]();
 }
 
 DynamicArray::~DynamicArray() {
@@ -27,34 +30,32 @@ void DynamicArray::print() const {
 
 void DynamicArray::set(int index, int value) {
     if (index < 0 || index >= m_size) {
-        std::cout << "Error: index out of range" << std::endl;
-        return;
+        throw std::out_of_range("Ошибка: индекс вне границ массива");
     }
     if (value < -100 || value > 100) {
-        std::cout << "Error: value must be from -100 to 100" << std::endl;
-        return;
+        throw std::invalid_argument("Ошибка: значение должно быть от -100 до 100");
     }
     m_data[index] = value;
 }
 
 int DynamicArray::get(int index) const {
     if (index < 0 || index >= m_size) {
-        std::cout << "Error: index out of range" << std::endl;
-        return 0;
+        throw std::out_of_range("Ошибка: индекс вне границ массива");
     }
     return m_data[index];
 }
 
 void DynamicArray::append(int value) {
     if (value < -100 || value > 100) {
-        std::cout << "Error: value must be from -100 to 100" << std::endl;
-        return;
+        throw std::invalid_argument("Ошибка: значение должно быть от -100 до 100");
     }
+    
     int* newData = new int[m_size + 1];
     for (int i = 0; i < m_size; ++i) {
         newData[i] = m_data[i];
     }
     newData[m_size] = value;
+    
     delete[] m_data;
     m_data = newData;
     m_size++;
