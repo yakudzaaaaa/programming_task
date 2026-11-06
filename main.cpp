@@ -1,72 +1,46 @@
 #include <iostream>
 #include <string>
+#include <utility>
 #include "DynamicArray.h"
 
+// для lvalue - конструктор копирования, для rvalue — конструктор перемещения
+void takeByValue(DynamicArray<int> arr) {
+    std::cout << "  inside function: " << arr << std::endl;
+}
+
 int main() {
-    std::cout << std::boolalpha;
+    
+    // Задача 1 оператор присваивания
+    std::cout << "\n Task 1: copy assignment " << std::endl;
+    DynamicArray<int> x(2);
+    x.set(0, 10); x.set(1, 20);
+    DynamicArray<int> y(5);
+    y = x;
+    std::cout << "  y = x: " << y << std::endl;
+    y = y; // self-assignment guard
+    std::cout << "  y = y (self): " << y << std::endl;
 
-    // Задание 1: operator[]
-    std::cout << " Task 1: operator[] " << std::endl;
-    DynamicArray<int> arr(3);
-    arr[0] = 10;
-    arr[1] = 20;
-    arr[2] = 30;
-    std::cout << "arr[1] = " << arr[1] << std::endl;
-    std::cout << "arr = " << arr << std::endl;
+    // Задание 2 + Задание 3 мув конструктор и оператор
+    std::cout << "\n Task 2/3: move assignment " << std::endl;
+    DynamicArray<int> z(2);
+    z.set(0, 7); z.set(1, 8);
+    DynamicArray<int> w(1);
+    w = std::move(z);
+    std::cout << "  w after move-assign: " << w << std::endl;
+    std::cout << "  z after move-assign: " << z << std::endl;
+    
+    // Задача 4 дороге копирование
+    std::cout << " Pass by value: copy " << std::endl;
+    DynamicArray<int> src(3);
+    src.set(0, 1); src.set(1, 2); src.set(2, 3);
+    takeByValue(src);
+    std::cout << "  src after copy-pass: " << src << std::endl;
 
-    // Задание 1: out of range
-    try {
-        arr[5] = 1;
-    } catch (const std::out_of_range& e) {
-        std::cout << "Caught: " << e.what() << std::endl;
-    }
+    // Задача 4 перенос указателя
+    std::cout << "\n Pass by value: move " << std::endl;
+    takeByValue(std::move(src));
+    std::cout << "  src after move-pass: " << src << std::endl;
 
-    // Задание 2: == и !=
-    std::cout << "\n Task 2: == and != " << std::endl;
-    DynamicArray<int> b = arr;
-    DynamicArray<int> c(3);
-    c[0] = 1; c[1] = 2; c[2] = 3;
-    std::cout << "arr == b: " << (arr == b) << std::endl;
-    std::cout << "arr != c: " << (arr != c) << std::endl;
-
-    // Задание 3: += и -= для массива
-    std::cout << "\n Task 3: += and -= (array) " << std::endl;
-    DynamicArray<int> x(3);
-    x[0] = 10; x[1] = 20; x[2] = 30;
-    DynamicArray<int> y(2);
-    y[0] = 5; y[1] = 5;
-    x += y;
-    std::cout << "x += y: " << x << std::endl;
-    x -= y;
-    std::cout << "x -= y: " << x << std::endl;
-
-    // Задание 3: += и -= для скаляра
-    std::cout << "\n Task 3: += and -= (scalar) " << std::endl;
-    DynamicArray<int> s(3);
-    s[0] = 1; s[1] = 2; s[2] = 3;
-    s += 10;
-    std::cout << "s += 10: " << s << std::endl;
-    s -= 5;
-    std::cout << "s -= 5: " << s << std::endl;
-
-    // Задание 4: читаем
-    std::cout << "\n Task 4: range-for read " << std::endl;
-    DynamicArray<std::string> str(2);
-    str[0] = "Hello";
-    str[1] = "World";
-    for (const auto& item : str) {
-        std::cout << item << " ";
-    }
-    std::cout << std::endl;
-
-    // Задание 4: меняем
-    std::cout << "\n Task 4: range-for modify " << std::endl;
-    DynamicArray<int> mod(3);
-    mod[0] = 1; mod[1] = 2; mod[2] = 3;
-    for (auto& item : mod) {
-        item += 1;
-    }
-    std::cout << "After modify: " << mod << std::endl;
 
     return 0;
 }

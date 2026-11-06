@@ -6,13 +6,14 @@
 #include <cmath>
 #include <type_traits>
 
+// Шаблон
 template <typename T>
 class DynamicArray {
 private:
     T* m_data;
     int m_size;
 
-    // проверка грааницц для интов
+    // Проверка границ для интов
     void checkIntegralBounds(const T& value) const {
         if constexpr (std::is_integral_v<T>) {
             if (static_cast<long long>(value) < -100 || static_cast<long long>(value) > 100) {
@@ -22,6 +23,7 @@ private:
     }
 
 public:
+    // Класс для выполнения arr[i] = value через сет
     class Proxy {
     private:
         DynamicArray* m_arr;
@@ -39,6 +41,7 @@ public:
         }
     };
 
+    // Конструктор
     DynamicArray(int size) {
         if (size < 0) {
             throw std::invalid_argument("Size cannot be negative");
@@ -47,10 +50,12 @@ public:
         m_data = new T[m_size]();
     }
 
+    // Деструктор
     ~DynamicArray() {
         delete[] m_data;
     }
 
+    // Копи конструктор
     DynamicArray(const DynamicArray& other) {
         m_size = other.m_size;
         m_data = new T[m_size];
@@ -59,6 +64,42 @@ public:
         }
     }
 
+    // Задание 1
+    DynamicArray& operator=(const DynamicArray& other) {
+        if (this == &other) {
+            return *this;
+        }
+        delete[] m_data;
+        m_size = other.m_size;
+        m_data = new T[m_size];
+        for (int i = 0; i < m_size; ++i) {
+            m_data[i] = other.m_data[i];
+        }
+        return *this;
+    }
+
+    // Задание 2
+    DynamicArray(DynamicArray&& other) noexcept {
+        m_data = other.m_data;
+        m_size = other.m_size;
+        other.m_data = nullptr;
+        other.m_size = 0;
+    }
+
+    // Задаание 3
+    DynamicArray& operator=(DynamicArray&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+        delete[] m_data;
+        m_data = other.m_data;
+        m_size = other.m_size;
+        other.m_data = nullptr;
+        other.m_size = 0;
+        return *this;
+    }
+
+    // Печать
     void print() const {
         for (int i = 0; i < m_size; ++i) {
             std::cout << m_data[i] << " ";
@@ -66,6 +107,7 @@ public:
         std::cout << std::endl;
     }
 
+    // Дать значение по индексу
     void set(int index, const T& value) {
         if (index < 0 || index >= m_size) {
             throw std::out_of_range("Index out of bounds (set)");
@@ -74,6 +116,7 @@ public:
         m_data[index] = value;
     }
 
+    // Взять значение по индексу
     T get(int index) const {
         if (index < 0 || index >= m_size) {
             throw std::out_of_range("Index out of bounds (get)");
@@ -81,6 +124,7 @@ public:
         return m_data[index];
     }
 
+    // Добавить в конец
     void append(const T& value) {
         checkIntegralBounds(value);
         T* newData = new T[m_size + 1];
@@ -93,6 +137,7 @@ public:
         m_size++;
     }
 
+    // Добавить другой массив
     void add(const DynamicArray& other) {
         for (int i = 0; i < m_size; ++i) {
             T val2 = (i < other.m_size) ? other.m_data[i] : T();
@@ -100,6 +145,7 @@ public:
         }
     }
 
+    // Вычесть другой массив
     void subtract(const DynamicArray& other) {
         for (int i = 0; i < m_size; ++i) {
             T val2 = (i < other.m_size) ? other.m_data[i] : T();
@@ -107,7 +153,7 @@ public:
         }
     }
 
-    // Задание 1: arr[i]
+    // Задание 4.1 arr[i]
     Proxy operator[](int index) {
         if (index < 0 || index >= m_size) {
             throw std::out_of_range("Index out of bounds (operator[])");
@@ -115,7 +161,7 @@ public:
         return Proxy(this, index);
     }
 
-    // Задание 2: == и !=
+    // Задание 4.2 == и !=
     bool operator==(const DynamicArray& other) const {
         if (m_size != other.m_size) return false;
         for (int i = 0; i < m_size; ++i) {
@@ -128,7 +174,7 @@ public:
         return !(*this == other);
     }
 
-    // Задание 3: += и -= для массивов
+    // Задание 4.3 += и -= для массива
     DynamicArray& operator+=(const DynamicArray& other) {
         add(other);
         return *this;
@@ -139,7 +185,7 @@ public:
         return *this;
     }
 
-    // Задание 3: += и -= для скаляров
+    // Задание 4.3 += и -= для скаляра
     DynamicArray& operator+=(const T& value) {
         for (int i = 0; i < m_size; ++i) {
             m_data[i] = m_data[i] + value;
@@ -154,7 +200,7 @@ public:
         return *this;
     }
 
-    // Задание 3 расстояние
+    // Задание 3.3 расстояние
     double distance(const DynamicArray& other) const {
         if constexpr (!std::is_arithmetic_v<T>) {
             throw std::bad_typeid();
@@ -170,16 +216,18 @@ public:
         return std::sqrt(sum);
     }
 
-    // Задание 4: итераторы
+    // Задание 4.4 итераторы
     T* begin() { return m_data; }
     T* end() { return m_data + m_size; }
     const T* begin() const { return m_data; }
     const T* end() const { return m_data + m_size; }
 
+    // друг
     template <typename U>
     friend std::ostream& operator<<(std::ostream& os, const DynamicArray<U>& arr);
 };
 
+// оператор вывода
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const DynamicArray<T>& arr) {
     os << "[";
