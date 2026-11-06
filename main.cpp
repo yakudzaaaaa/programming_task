@@ -3,90 +3,70 @@
 #include "DynamicArray.h"
 
 int main() {
-    // Тест 1 invalid_argument
-    std::cout << "=== Test 1: std::invalid_argument ===" << std::endl;
-    try {
-        DynamicArray<int> arr(3);
-        arr.set(0, 150); // 150 вне -100..100
-        std::cout << "This line will not be printed" << std::endl;
-    } catch (const std::invalid_argument& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
-    }
+    std::cout << std::boolalpha;
 
-    // Тест 2 out_of_range
-    std::cout << "\n=== Test 2: std::out_of_range ===" << std::endl;
+    // Задание 1: operator[]
+    std::cout << " Task 1: operator[] " << std::endl;
+    DynamicArray<int> arr(3);
+    arr[0] = 10;
+    arr[1] = 20;
+    arr[2] = 30;
+    std::cout << "arr[1] = " << arr[1] << std::endl;
+    std::cout << "arr = " << arr << std::endl;
+
+    // Задание 1: out of range
     try {
-        DynamicArray<int> arr(3);
-        arr.get(10); // нет индекса 10
-        std::cout << "This line will not be printed" << std::endl;
+        arr[5] = 1;
     } catch (const std::out_of_range& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
+        std::cout << "Caught: " << e.what() << std::endl;
     }
 
-    // Тест 3 bad_alloc
-    std::cout << "\n=== Test 3: std::bad_alloc ===" << std::endl;
-    try {
-        std::cout << "Trying to create a huge array..." << std::endl;
-        DynamicArray<int> hugeArray(2000000000);
-        std::cout << "This line will not be printed" << std::endl;
-    } catch (const std::bad_alloc& e) {
-        std::cout << "Caught exception: not enough memory (bad_alloc)" << std::endl;
+    // Задание 2: == и !=
+    std::cout << "\n Task 2: == and != " << std::endl;
+    DynamicArray<int> b = arr;
+    DynamicArray<int> c(3);
+    c[0] = 1; c[1] = 2; c[2] = 3;
+    std::cout << "arr == b: " << (arr == b) << std::endl;
+    std::cout << "arr != c: " << (arr != c) << std::endl;
+
+    // Задание 3: += и -= для массива
+    std::cout << "\n Task 3: += and -= (array) " << std::endl;
+    DynamicArray<int> x(3);
+    x[0] = 10; x[1] = 20; x[2] = 30;
+    DynamicArray<int> y(2);
+    y[0] = 5; y[1] = 5;
+    x += y;
+    std::cout << "x += y: " << x << std::endl;
+    x -= y;
+    std::cout << "x -= y: " << x << std::endl;
+
+    // Задание 3: += и -= для скаляра
+    std::cout << "\n Task 3: += and -= (scalar) " << std::endl;
+    DynamicArray<int> s(3);
+    s[0] = 1; s[1] = 2; s[2] = 3;
+    s += 10;
+    std::cout << "s += 10: " << s << std::endl;
+    s -= 5;
+    std::cout << "s -= 5: " << s << std::endl;
+
+    // Задание 4: читаем
+    std::cout << "\n Task 4: range-for read " << std::endl;
+    DynamicArray<std::string> str(2);
+    str[0] = "Hello";
+    str[1] = "World";
+    for (const auto& item : str) {
+        std::cout << item << " ";
     }
+    std::cout << std::endl;
 
-    // Тест 4 целочисленный массив
-    std::cout << "\n=== Test 4: operator<< with int ===" << std::endl;
-    DynamicArray<int> arrInt(3);
-    arrInt.set(0, 10);
-    arrInt.set(1, 20);
-    arrInt.set(2, 30);
-    std::cout << "Integer array: " << arrInt << std::endl;
-
-    // Тест 5 строковый массив
-    std::cout << "\n=== Test 5: operator<< with string ===" << std::endl;
-    DynamicArray<std::string> arrStr(2);
-    arrStr.set(0, "Hello");
-    arrStr.set(1, "World");
-    std::cout << "String array: " << arrStr << std::endl;
-
-    // Тест 6 дистанцция числовых массивов
-    std::cout << "\n=== Test 6: distance (numeric) ===" << std::endl;
-    try {
-        DynamicArray<int> a(2);
-        a.set(0, 0); a.set(1, 0);
-        DynamicArray<int> b(2);
-        b.set(0, 3); b.set(1, 4);
-        std::cout << "Distance between [0,0] and [3,4]: " << a.distance(b) << std::endl;
-    } catch (const std::exception& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
+    // Задание 4: меняем
+    std::cout << "\n Task 4: range-for modify " << std::endl;
+    DynamicArray<int> mod(3);
+    mod[0] = 1; mod[1] = 2; mod[2] = 3;
+    for (auto& item : mod) {
+        item += 1;
     }
+    std::cout << "After modify: " << mod << std::endl;
 
-    // Тест 7 дистанция нечисловой массив
-    std::cout << "\n=== Test 7: distance (non-numeric, must fail) ===" << std::endl;
-    try {
-        DynamicArray<std::string> s1(1), s2(1);
-        s1.set(0, "a");
-        s2.set(0, "b");
-        s1.distance(s2);
-        std::cout << "This line will not be printed" << std::endl;
-    } catch (const std::bad_typeid& e) {
-        std::cout << "Caught bad_typeid: cannot calculate distance for non-numeric types" << std::endl;
-    } catch (const std::exception& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
-    }
-
-    // Тест 8 дистанцция с разными размерами
-    std::cout << "\n=== Test 8: distance (different sizes, must fail) ===" << std::endl;
-    try {
-        DynamicArray<int> x(2);
-        DynamicArray<int> y(3);
-        x.distance(y);
-        std::cout << "This line will not be printed" << std::endl;
-    } catch (const std::invalid_argument& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
-    } catch (const std::exception& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
-    }
-
-    std::cout << "\n=== All tests completed ===" << std::endl;
     return 0;
 }
