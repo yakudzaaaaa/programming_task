@@ -13,7 +13,10 @@ $(TARGET): $(OBJS)
 %.o: %.cpp DynamicArray.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-clean:
-	rm -f $(OBJS) $(TARGET)
+asan: $(SRCS)
+	$(CXX) $(CXXFLAGS) -fsanitize=address -static-libasan -g $(SRCS) -o main_asan
 
-.PHONY: all clean
+clean:
+	rm -f $(OBJS) $(TARGET) main_asan
+
+.PHONY: all clean asan
